@@ -2,14 +2,24 @@
     box-sizing: border-box;
 }
 
+body {
+    font-family: Arial, sans-serif;
+}
+
 .wrapper {
     max-width: 300px;
     margin: 0 auto;
 }
 
+a {
+    color: #777;
+    font-size: 14px;
+}
+
 .header,
 .footer {
     height: 50vh;
+    text-align: center;
 }
 
 .ruler {
@@ -23,4 +33,7 @@
 .ruler__item {
     padding: 5px;
     border-bottom: 1px solid black;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
 }
