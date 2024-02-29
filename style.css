@@ -1,0 +1,26 @@
+* {
+    box-sizing: border-box;
+}
+
+.wrapper {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.header,
+.footer {
+    height: 50vh;
+}
+
+.ruler {
+
+}
+
+.ruler__item:first-child {
+    border-top: 1px solid black;
+}
+
+.ruler__item {
+    padding: 5px;
+    border-bottom: 1px solid black;
+}
