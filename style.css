@@ -4,6 +4,8 @@
 
 body {
     font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
 .wrapper {
@@ -16,10 +18,16 @@ a {
     font-size: 14px;
 }
 
+.header {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
 .header,
 .footer {
     height: 50vh;
-    text-align: center;
 }
 
 .ruler {
@@ -36,4 +44,26 @@ a {
     display: flex;
     justify-content: flex-start;
     align-items: center;
+}
+
+.display {
+    position: fixed;
+    width: 300px;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    padding: 20px;
+    background: black;
+    color: white;
+}
+
+.ruler-pointer {
+    border-top: 1px solid red;
+    position: fixed;
+    top: 50%;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 300px;
 }

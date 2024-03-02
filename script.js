@@ -1,3 +1,9 @@
+/*
+- loading indicator
+- scale
+- currency choose
+*/
+
 const WILDCARD = '%';
 const API_URL = `https://open.er-api.com/v6/latest/${WILDCARD}`;
 const LOCAL_STORAGE_KEY = `rates_${WILDCARD}`;
@@ -165,8 +171,64 @@ const CURRENCY_LIST = [
 	'ZMW, Zambian Kwacha, Zambia',
 	'ZWL, Zimbabwean Dollar, Zimbabwe',
 ];
-const RULER_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100];
+const RULER_VALUES = [
+	{ value: 1, factor: 1 },
+	{ value: 2, factor: 1 },
+	{ value: 3, factor: 1 },
+	{ value: 4, factor: 1 },
+	{ value: 5, factor: 1 },
+	{ value: 6, factor: 1 },
+	{ value: 7, factor: 1 },
+	{ value: 8, factor: 1 },
+	{ value: 9, factor: 1 },
+	{ value: 10, factor: 5 },
+	{ value: 15, factor: 5 },
+	{ value: 20, factor: 5 },
+	{ value: 25, factor: 5 },
+	{ value: 30, factor: 5 },
+	{ value: 35, factor: 5 },
+	{ value: 40, factor: 5 },
+	{ value: 45, factor: 5 },
+	{ value: 50, factor: 10 },
+	{ value: 60, factor: 10 },
+	{ value: 70, factor: 10 },
+	{ value: 80, factor: 10 },
+	{ value: 90, factor: 10 },
+	{ value: 100, factor: 50 },
+	{ value: 150, factor: 50 },
+	{ value: 200, factor: 50 },
+	{ value: 250, factor: 50 },
+	{ value: 300, factor: 50 },
+	{ value: 350, factor: 50 },
+	{ value: 400, factor: 50 },
+	{ value: 450, factor: 50 },
+	{ value: 500, factor: 100 },
+	{ value: 600, factor: 100 },
+	{ value: 700, factor: 100 },
+	{ value: 800, factor: 100 },
+	{ value: 900, factor: 100 },
+	{ value: 1000, factor: 1000 },
+];
 const RULER_STEP_HEIGHT = 50;
+
+const insertSubstring = (str, subStr, index) => {
+	return str.slice(0, index) + subStr + str.slice(index);
+};
+
+const formatNumber = (number) => {
+	// add numbers after point, only in this case
+	if (number < 100) {
+		return number.toFixed(2);
+	}
+
+	// don't add numbers after point, add spaces instead
+	let s = Math.round(number).toString();
+	const spacesNumber = Math.floor((s.length - 1) / 3);
+	for (let i = spacesNumber; i > 0; i--) {
+		s = insertSubstring(s, ' ', s.length - i * 3);
+	}
+	return s;
+};
 
 const getParametrizedString = (template, value) => {
 	return template.replace(WILDCARD, value);
@@ -219,6 +281,25 @@ const createElement = (tagName, attributes) => {
 	return tag;
 };
 
+const renderRulerItems = ($parent, currency1, currency2, rate) => {
+	RULER_VALUES.forEach((item) => {
+		const $rulerItem = createElement('div', [
+			{ name: 'className', value: 'ruler__item' },
+			{ name: 'style', value: `height: ${RULER_STEP_HEIGHT}px` },
+		]);
+		$rulerItem.innerHTML = `
+			<div>
+				<b>${formatNumber(item.value)}</b>
+				${currency1}
+				=
+				<b>${formatNumber(item.value * rate)}</b>
+				${currency2}
+			</div>
+		`;
+		$parent.appendChild($rulerItem);
+	});
+};
+
 window.onload = async () => {
 	const currency1 = 'EUR';
 	const currency2 = 'UZS';
@@ -227,15 +308,21 @@ window.onload = async () => {
 	const rate = data.rates[currency2];
 
 	const $ruler = document.getElementById('ruler');
+	const $display = document.getElementById('display');
 
-	RULER_VALUES.forEach((item) => {
-		const $rulerItem = createElement('div', [
-			{ name: 'className', value: 'ruler__item' },
-			{ name: 'style', value: `height: ${RULER_STEP_HEIGHT}px` },
-		]);
-		$rulerItem.innerHTML = `
-			${item} ${currency1} = ${Math.round(item * rate)} ${currency2}
-		`;
-		$ruler.appendChild($rulerItem);
+	renderRulerItems($ruler, currency1, currency2, rate);
+
+	document.addEventListener('scroll', () => {
+		const stepNumber = Math.floor(window.scrollY / RULER_STEP_HEIGHT);
+		if (stepNumber >= RULER_VALUES.length) {
+			return;
+		}
+
+		const distanceFromLastStep = window.scrollY % RULER_STEP_HEIGHT;
+		const distancePercent = distanceFromLastStep * (1 / RULER_STEP_HEIGHT);
+		const stepInfo = RULER_VALUES[stepNumber];
+		const screenValueCurrency1 = stepInfo.value + distancePercent * stepInfo.factor;
+		const screenValueCurrency2 = screenValueCurrency1 * rate;
+		$display.innerText = `${formatNumber(screenValueCurrency1)} ${currency1} = ${formatNumber(screenValueCurrency2)} ${currency2}`;
 	});
 };
