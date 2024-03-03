@@ -2,6 +2,15 @@
     box-sizing: border-box;
 }
 
+.hidden {
+    display: none;
+}
+
+html,
+body {
+    height: 100%;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -11,6 +20,7 @@ body {
 .wrapper {
     max-width: 300px;
     margin: 0 auto;
+    height: 100%;
 }
 
 a {
@@ -47,23 +57,20 @@ a {
 }
 
 .display {
-    position: fixed;
-    width: 300px;
-    top: 0;
-    left: 0;
-    right: 0;
-    margin: 0 auto;
     padding: 20px;
     background: black;
     color: white;
 }
 
-.ruler-pointer {
-    border-top: 1px solid red;
-    position: fixed;
-    top: 50%;
-    left: 0;
-    right: 0;
-    margin: 0 auto;
-    width: 300px;
+.main-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    height: 100%;
+    position: relative;
+}
+
+.ruler {
+    flex-grow: 1;
+    overflow-y: auto;
 }

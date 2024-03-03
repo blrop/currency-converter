@@ -311,18 +311,25 @@ window.onload = async () => {
 	const $display = document.getElementById('display');
 
 	renderRulerItems($ruler, currency1, currency2, rate);
+	$ruler.appendChild(createElement('div', [
+		{ name: 'className', value: 'ruler__padding' },
+		{ name: 'style', value: 'height: 100%' },
+	]));
 
-	document.addEventListener('scroll', () => {
-		const stepNumber = Math.floor(window.scrollY / RULER_STEP_HEIGHT);
+	const onRulerScroll = () => {
+		const stepNumber = Math.floor($ruler.scrollTop / RULER_STEP_HEIGHT);
 		if (stepNumber >= RULER_VALUES.length) {
 			return;
 		}
 
-		const distanceFromLastStep = window.scrollY % RULER_STEP_HEIGHT;
+		const distanceFromLastStep = $ruler.scrollTop % RULER_STEP_HEIGHT;
 		const distancePercent = distanceFromLastStep * (1 / RULER_STEP_HEIGHT);
 		const stepInfo = RULER_VALUES[stepNumber];
 		const screenValueCurrency1 = stepInfo.value + distancePercent * stepInfo.factor;
 		const screenValueCurrency2 = screenValueCurrency1 * rate;
 		$display.innerText = `${formatNumber(screenValueCurrency1)} ${currency1} = ${formatNumber(screenValueCurrency2)} ${currency2}`;
-	});
+	};
+
+	$ruler.addEventListener('scroll', onRulerScroll);
+	onRulerScroll();
 };
