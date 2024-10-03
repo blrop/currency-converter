@@ -64,8 +64,7 @@ a {
     color: #cfd2d6;
 }
 
-.display__from-currency,
-.display__to-currency {
+.text-button {
     border: none;
     background: none;
     padding: 0;
@@ -98,4 +97,27 @@ a {
     flex-grow: 1;
     overflow-y: auto;
     scrollbar-width: thin;
+}
+
+.ruler__padding {
+    height: 100%;
+}
+
+.credits {
+    text-align: center;
+    padding: 20px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #2d2d2d;
+}
+
+.choose-currency-screen__title {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px;
+}
+
+.currency-list__item {
+    margin-bottom: 10px;
 }

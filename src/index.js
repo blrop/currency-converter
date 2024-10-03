@@ -4,15 +4,18 @@
 - currency choose
 */
 
-import { RULER_VALUES } from './constants';
+import { CURRENCY_LIST, RULER_VALUES } from './constants';
 
 import './css/style.css';
 
 const WILDCARD = '%';
 const API_URL = `https://open.er-api.com/v6/latest/${WILDCARD}`;
-const LOCAL_STORAGE_KEY = `rates_${WILDCARD}`;
+const RATES_LS_KEY = `rates_${WILDCARD}`;
+const CURRENCY_2_LS_KEY = `currency_2`;
 const MILLISECONDS_IN_DAY = 86400000;
 const RULER_STEP_HEIGHT = 50;
+const DEFAULT_CURRENCY_1 = 'EUR';
+const DEFAULT_CURRENCY_2 = 'USD';
 
 const insertSubstring = (str, subStr, index) => {
 	return str.slice(0, index) + subStr + str.slice(index);
@@ -53,7 +56,7 @@ const getRates = async (currencyCode) => {
 };
 
 const getRatesCached = async (currencyCode) => {
-	const storageKey = getParametrizedString(LOCAL_STORAGE_KEY, currencyCode);
+	const storageKey = getParametrizedString(RATES_LS_KEY, currencyCode);
 	const savedDataRaw = localStorage.getItem(storageKey);
 
 	let savedData;
@@ -93,6 +96,8 @@ const hideElement = ($el) => {
 };
 
 const renderRulerItems = ($parent, currency1, currency2, rate) => {
+	$parent.innerHTML = '';
+	
 	RULER_VALUES.forEach((item) => {
 		const $rulerItem = createElement('div', [
 			{ name: 'className', value: 'ruler__item' },
@@ -107,8 +112,31 @@ const renderRulerItems = ($parent, currency1, currency2, rate) => {
 				${currency2}
 			</div>
 		`;
+
 		$parent.appendChild($rulerItem);
 	});
+};
+
+const renderCurrencyList = ($parent) => {
+	CURRENCY_LIST.forEach((item) => {
+		const currencyCode = item.substring(0, 3);
+		const currencyName = item.substring(5);
+
+		const $listItem = document.createElement('div');
+		$listItem.className = 'currency-list__item text-button';
+		$listItem.dataset.code = currencyCode;
+		$listItem.appendChild(document.createTextNode(`${currencyCode} - ${currencyName}`));
+
+		$parent.appendChild($listItem);
+	});
+};
+
+const renderRates = ($ruler, currency1, currency2, rates) => {
+	const rate = rates[currency2];
+	renderRulerItems($ruler, currency1, currency2, rate);
+	const $rulerPadding = document.createElement('div');
+	$rulerPadding.className = 'ruler__padding';
+	$ruler.appendChild($rulerPadding);
 };
 
 window.onload = async () => {
@@ -119,22 +147,20 @@ window.onload = async () => {
 	const $fromCurrency = document.getElementById('from-currency');
 	const $toValue = document.getElementById('to-value');
 	const $toCurrency = document.getElementById('to-currency');
+	const $currencyList = document.getElementById('currency-list');
 
 	const currency1 = 'EUR';
-	const currency2 = 'UZS';
+	let currency2 = localStorage.getItem(CURRENCY_2_LS_KEY) || DEFAULT_CURRENCY_2;
+	
 	$fromCurrency.innerText = currency1;
 	$toCurrency.innerText = currency2;
 
 	const data = await getRatesCached(currency1);
-	const rate = data.rates[currency2];
-
-	renderRulerItems($ruler, currency1, currency2, rate);
-	$ruler.appendChild(createElement('div', [
-		{ name: 'className', value: 'ruler__padding' },
-		{ name: 'style', value: 'height: 100%' },
-	]));
+	const rates = data.rates;
 
 	const onRulerScroll = () => {
+		const rate = rates[currency2];
+
 		const stepNumber = Math.floor($ruler.scrollTop / RULER_STEP_HEIGHT);
 		if (stepNumber >= RULER_VALUES.length) {
 			return;
@@ -149,16 +175,32 @@ window.onload = async () => {
 		$toValue.innerText = formatNumber(screenValueCurrency2);
 	};
 
+	renderRates($ruler, currency1, currency2, rates);
+
+	renderCurrencyList($currencyList);
+
 	$ruler.addEventListener('scroll', onRulerScroll);
 	onRulerScroll();
 
 	$fromCurrency.addEventListener('click', () => {
-		hideElement($mainScreen);
-		showElement($chooseCurrencyScreen);
+		// hideElement($mainScreen);
+		// showElement($chooseCurrencyScreen);
 	});
 
 	$toCurrency.addEventListener('click', () => {
 		hideElement($mainScreen);
 		showElement($chooseCurrencyScreen);
+	});
+
+	$currencyList.addEventListener('click', (e) => {
+		currency2 = e.target.dataset.code;
+
+		renderRates($ruler, DEFAULT_CURRENCY_1, currency2, rates);
+		$toCurrency.innerText = currency2;
+
+		localStorage.setItem(CURRENCY_2_LS_KEY, currency2);
+
+		hideElement($chooseCurrencyScreen);
+		showElement($mainScreen);
 	});
 };
