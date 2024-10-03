@@ -3,19 +3,26 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
-	<script src="script.js"></script>
-	<link rel="stylesheet" href="style.css">
+	<title>Currencies converter</title>
+	<script src="dist/main.js"></script>
 </head>
 <body>
 	<a class="hidden" href="https://www.exchangerate-api.com" target="_blank">Rates By Exchange Rate API</a>
     <div class="wrapper">
-		<div id="main-screen" class="main-screen">
-			<div class="display" id="display"></div>
+		<div class="main-screen" id="main-screen">
+			<div class="display">
+				<span class="display__from-value" id="from-value"></span>
+				<button class="display__from-currency" id="from-currency"></button>
+				=
+				<span class="display__to-value" id="to-value"></span>
+				<button class="display__to-currency" id="to-currency"></button>
+			</div>
 			<div class="ruler" id="ruler"></div>
 		</div>
-		<div id="choose-currency-screen" class="choose-currency-screen hidden">
-
+		<div class="choose-currency-screen hidden" id="choose-currency-screen">
+			= choose currency screen =
+			Choose source currency
+			Choose target currency
 		</div>
 	</div>
 </body>

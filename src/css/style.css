@@ -3,12 +3,14 @@
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 html,
 body {
     height: 100%;
+    background: #2d2d2d;
+    color: #cfd2d6;
 }
 
 body {
@@ -45,12 +47,12 @@ a {
 }
 
 .ruler__item:first-child {
-    border-top: 1px solid black;
+    border-top: 1px solid #565656;
 }
 
 .ruler__item {
     padding: 5px;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid #565656;
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -58,8 +60,30 @@ a {
 
 .display {
     padding: 20px;
-    background: black;
-    color: white;
+    background: #1c1c1c;
+    color: #cfd2d6;
+}
+
+.display__from-currency,
+.display__to-currency {
+    border: none;
+    background: none;
+    padding: 0;
+    color: aqua;
+    border-bottom: 1px dashed aqua;
+    cursor: pointer;
+}
+
+.display__from-value,
+.display__to-value {
+    font-weight: bold;
+}
+
+.display__from-currency,
+.display__to-currency,
+.display__from-value,
+.display__to-value {
+    font-size: 16px;
 }
 
 .main-screen {
@@ -73,4 +97,5 @@ a {
 .ruler {
     flex-grow: 1;
     overflow-y: auto;
+    scrollbar-width: thin;
 }
