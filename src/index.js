@@ -1,99 +1,13 @@
-/*
-- loading indicator
-- scale
-- currency choose
-*/
-
-import { CURRENCY_LIST, RULER_VALUES } from './constants';
+import {
+	CURRENCY_2_LOCAL_STORAGE_KEY,
+	CURRENCY_LIST,
+	DEFAULT_CURRENCY_1, DEFAULT_CURRENCY_2,
+	RULER_STEP_HEIGHT,
+	RULER_VALUES
+} from './constants';
+import { createElement, formatNumber, getCurrencyRatesCached, hideElement, showElement } from './helper-functions';
 
 import './css/style.css';
-
-const WILDCARD = '%';
-const API_URL = `https://open.er-api.com/v6/latest/${WILDCARD}`;
-const RATES_LS_KEY = `rates_${WILDCARD}`;
-const CURRENCY_2_LS_KEY = `currency_2`;
-const MILLISECONDS_IN_DAY = 86400000;
-const RULER_STEP_HEIGHT = 50;
-const DEFAULT_CURRENCY_1 = 'EUR';
-const DEFAULT_CURRENCY_2 = 'USD';
-
-const insertSubstring = (str, subStr, index) => {
-	return str.slice(0, index) + subStr + str.slice(index);
-};
-
-const formatNumber = (number) => {
-	// add numbers after point, only in this case
-	if (number < 100) {
-		return number.toFixed(2);
-	}
-
-	// don't add numbers after point, add spaces instead
-	let s = Math.round(number).toString();
-	const spacesNumber = Math.floor((s.length - 1) / 3);
-	for (let i = spacesNumber; i > 0; i--) {
-		s = insertSubstring(s, ' ', s.length - i * 3);
-	}
-	return s;
-};
-
-const getParametrizedString = (template, value) => {
-	return template.replace(WILDCARD, value);
-};
-
-const isTimestampTooOld = (timestamp) => {
-	if (!timestamp) {
-		return true;
-	}
-
-	const givenDate = new Date(timestamp);
-	const currentDate = new Date();
-	return currentDate.getTime() - givenDate.getTime() > MILLISECONDS_IN_DAY;
-};
-
-const getRates = async (currencyCode) => {
-	const response = await fetch(getParametrizedString(API_URL, currencyCode));
-	return await response.json();
-};
-
-const getRatesCached = async (currencyCode) => {
-	const storageKey = getParametrizedString(RATES_LS_KEY, currencyCode);
-	const savedDataRaw = localStorage.getItem(storageKey);
-
-	let savedData;
-	try {
-		savedData = JSON.parse(savedDataRaw);
-	} catch (error) {
-		savedData = null;
-	}
-
-	if (!savedData || isTimestampTooOld(savedData.lastUpdate)) {
-		const newRatesData = await getRates(currencyCode);
-		const dataToSave = {
-			lastUpdate: new Date(),
-			data: newRatesData,
-		};
-		localStorage.setItem(storageKey, JSON.stringify(dataToSave));
-		return newRatesData;
-	}
-
-	return savedData.data;
-};
-
-const createElement = (tagName, attributes) => {
-	const tag = document.createElement(tagName);
-	attributes.forEach((item) => {
-		tag[item.name] = item.value;
-	});
-	return tag;
-};
-
-const showElement = ($el) => {
-	$el.classList.remove('hidden');
-};
-
-const hideElement = ($el) => {
-	$el.classList.add('hidden');
-};
 
 const renderRulerItems = ($parent, currency1, currency2, rate) => {
 	$parent.innerHTML = '';
@@ -148,14 +62,15 @@ window.onload = async () => {
 	const $toValue = document.getElementById('to-value');
 	const $toCurrency = document.getElementById('to-currency');
 	const $currencyList = document.getElementById('currency-list');
+	const $backButton = document.getElementById('back-button');
 
 	const currency1 = 'EUR';
-	let currency2 = localStorage.getItem(CURRENCY_2_LS_KEY) || DEFAULT_CURRENCY_2;
+	let currency2 = localStorage.getItem(CURRENCY_2_LOCAL_STORAGE_KEY) || DEFAULT_CURRENCY_2;
 	
 	$fromCurrency.innerText = currency1;
 	$toCurrency.innerText = currency2;
 
-	const data = await getRatesCached(currency1);
+	const data = await getCurrencyRatesCached(currency1);
 	const rates = data.rates;
 
 	const onRulerScroll = () => {
@@ -192,13 +107,18 @@ window.onload = async () => {
 		showElement($chooseCurrencyScreen);
 	});
 
+	$backButton.addEventListener('click', () => {
+		hideElement($chooseCurrencyScreen);
+		showElement($mainScreen);
+	});
+
 	$currencyList.addEventListener('click', (e) => {
 		currency2 = e.target.dataset.code;
 
 		renderRates($ruler, DEFAULT_CURRENCY_1, currency2, rates);
 		$toCurrency.innerText = currency2;
 
-		localStorage.setItem(CURRENCY_2_LS_KEY, currency2);
+		localStorage.setItem(CURRENCY_2_LOCAL_STORAGE_KEY, currency2);
 
 		hideElement($chooseCurrencyScreen);
 		showElement($mainScreen);

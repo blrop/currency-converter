@@ -1,0 +1,6 @@
+- loading indicator
+- scale
+- choose "from" currency
+- compress css properly (also better not to place it inside the js file)
+- move index.html file to another dir (dist?)
+- get rid of innerHTML

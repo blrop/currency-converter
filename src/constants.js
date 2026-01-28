@@ -1,3 +1,18 @@
+export const WILDCARD = '%';
+
+export const API_URL = `https://open.er-api.com/v6/latest/${WILDCARD}`;
+
+export const RATES_LOCAL_STORAGE_KEY = `rates_${WILDCARD}`;
+export const CURRENCY_1_LOCAL_STORAGE_KEY = 'currency_1';
+export const CURRENCY_2_LOCAL_STORAGE_KEY = 'currency_2';
+
+export const MILLISECONDS_IN_DAY = 86_400_000;
+
+export const RULER_STEP_HEIGHT = 50;
+
+export const DEFAULT_CURRENCY_1 = 'EUR';
+export const DEFAULT_CURRENCY_2 = 'USD';
+
 export const RULER_VALUES = [
     { value: 1, factor: 1 },
     { value: 2, factor: 1 },

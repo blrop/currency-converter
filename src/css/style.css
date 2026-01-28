@@ -105,17 +105,37 @@ a {
 
 .credits {
     text-align: center;
-    padding: 20px;
+    padding: 5px;
     position: fixed;
     bottom: 0;
     width: 100%;
     background: #2d2d2d;
 }
 
+.credits a {
+    font-size: 12px;
+}
+
+.choose-currency-screen {
+    display: flex;
+    flex-direction: column;
+    padding-block-start: 5px;
+    align-items: center;
+    gap: 10px;
+}
+
 .choose-currency-screen__title {
     font-size: 18px;
     font-weight: bold;
     padding: 10px;
+}
+
+.choose-currency-screen__back {
+    background: transparent;
+    border: 2px solid aqua;
+    color: aqua;
+    padding: 5px 10px;
+    cursor: pointer;
 }
 
 .currency-list__item {
